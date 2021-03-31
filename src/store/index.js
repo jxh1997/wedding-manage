@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 const state = {
+	baseUrl2: "http://152.136.229.70:8011/test",  // 图片地址
 	adminInfo: {
 		avatar: require('@/assets/img/avatar.png')
 	},

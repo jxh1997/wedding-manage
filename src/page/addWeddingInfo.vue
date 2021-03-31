@@ -10,14 +10,14 @@
           label-width="110px"
           class="demo-formData"
         >
-          <el-form-item label="婚礼名称" prop="title">
-            <el-input v-model="formData.title"></el-input>
+          <el-form-item label="婚礼名称" prop="titletext">
+            <el-input v-model="formData.titletext"></el-input>
           </el-form-item>
-          <el-form-item label="婚礼简介" prop="desc">
-            <el-input v-model="formData.desc"></el-input>
+          <el-form-item label="婚礼简介" prop="infotext">
+            <el-input v-model="formData.infotext"></el-input>
           </el-form-item>
-          <el-form-item label="婚礼详情" prop="desc2">
-            <el-input type="textarea" v-model="formData.desc2"></el-input>
+          <el-form-item label="婚礼详情" prop="xqtext">
+            <el-input type="textarea" v-model="formData.xqtext"></el-input>
           </el-form-item>
           <el-form-item label="婚礼类型">
             <el-select
@@ -35,7 +35,7 @@
           </el-form-item>
 
           <el-form-item label="婚礼价格" style="white-space: nowrap">
-            <el-input v-model="formData.price1" style="width: 100px"></el-input>
+            <el-input v-model="formData.price" style="width: 100px"></el-input>
             <!-- ~ -->
             <!-- <el-input v-model="formData.price2" style="width: 100px"></el-input> -->
           </el-form-item>
@@ -46,11 +46,10 @@
               :action="baseUrl"
               :show-file-list="false"
               :on-success="handleShopAvatarScucess"
-              :before-upload="beforeAvatarUpload"
             >
               <img
-                v-if="formData.image_path"
-                :src="formData.image_path"
+                v-if="formData.imgpath"
+                :src="$store.state.baseUrl2 + formData.imgpath"
                 class="avatar"
               />
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -75,12 +74,12 @@ export default {
   data() {
     return {
       formData: {
-        title: "", //婚礼名称
-        desc: "", //婚礼简介
-        desc2: "", //婚礼详情
-        price1: 0, //价格1
-        price2: 0, //价格2
-        image_path: "",
+        titletext: "", //婚礼名称
+        hlclass: "", // 婚礼类型
+        infotext: "", //婚礼简介
+        xqtext: "", //婚礼详情
+        price: 0, //价格1
+        imgpath: "",
         activityValue: "西式婚礼",
       },
       rules: {
@@ -142,25 +141,10 @@ export default {
     handleShopAvatarScucess(res, file) {
       console.log("handleShopAvatarScucess: ", res);
       if (res.code === "0") {
-        this.formData.image_path = res.path;
+        this.formData.imgpath = res.path;
       } else {
         this.$message.error("上传图片失败！");
       }
-    },
-
-    // 限制上传图片格式、大小
-    beforeAvatarUpload(file) {
-      const isRightType =
-        file.type === "image/jpeg" || file.type === "image/png";
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isRightType) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
-      }
-      if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
-      }
-      return isRightType && isLt2M;
     },
 
     // 立即创建表单提交
@@ -171,23 +155,22 @@ export default {
           try {
             await this.$axios
               .post(
-                `/insHlinfo?hlclass=${this.formData.activityValue}&imgpath=${this.formData.image_path}&infotext=${this.formData.desc2}&price=${this.formData.price1}&titletext=${this.formData.title}`
+                `/insHlinfo?hlclass=${this.formData.activityValue}&imgpath=${this.formData.imgpath}&infotext=${this.formData.infotext}&price=${this.formData.price}&titletext=${this.formData.titletext}&xqtext=${this.formData.xqtext}`
               )
               .then((res) => {
-                console.log(res);
                 if (res.data.code === "0") {
                   this.$message({
                     type: "success",
                     message: "添加成功",
                   });
                   this.formData = {
-                    title: "", //婚礼名称
-                    desc: "", //婚礼简介
-                    desc2: "", //婚礼详情
-                    price1: 0, //价格1
-                    price2: 0, //价格2
+                    titletext: "", //婚礼名称
+                    hlclass: "", // 婚礼类型
+                    infotext: "", //婚礼简介
+                    xqtext: "", //婚礼详情
+                    price: 0, //价格1
+                    imgpath: "",
                     activityValue: "西式婚礼",
-                    image_path: "",
                   };
                   this.$router.push({
                     path: "weddingInfoList",

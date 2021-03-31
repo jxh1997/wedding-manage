@@ -14,17 +14,17 @@
                 <span>{{ props.row.infotext }}</span>
               </el-form-item>
               <el-form-item label="婚礼详情">
-                <span>{{ props.row.infotext }}</span>
+                <span>{{ props.row.xqtext }}</span>
               </el-form-item>
               <el-form-item label="价格">
                 <span>{{ props.row.price }}</span>
               </el-form-item>
-              <el-form-item label="评论数">
+              <!-- <el-form-item label="评论数">
                 <span>{{ props.row.dzlist }}</span>
               </el-form-item>
               <el-form-item label="点赞数">
                 <span>{{ props.row.dzlist }}</span>
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item label="婚礼类型">
                 <span>{{ props.row.hlclass }}</span>
               </el-form-item>
@@ -37,7 +37,7 @@
         <el-table-column label="婚礼简介" prop="infotext"> </el-table-column>
         <el-table-column label="婚礼类型" prop="hlclass"> </el-table-column>
         <el-table-column label="婚礼价格" prop="price"> </el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="300">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">
               编辑
@@ -111,11 +111,10 @@
               :action="baseUrl"
               :show-file-list="false"
               :on-success="handleServiceAvatarScucess"
-              :before-upload="beforeAvatarUpload"
             >
               <img
                 v-if="selectTable.imgpath"
-                :src="selectTable.imgpath"
+                :src="$store.state.baseUrl2 + selectTable.imgpath"
                 class="avatar"
               />
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -128,6 +127,17 @@
           <el-button type="primary" @click="updateWedding">确 定</el-button>
         </div>
       </el-dialog>
+    </div>
+    <div class="Pagination" style="text-align: left; margin-top: 10px">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-size="20"
+        layout="total, prev, pager, next"
+        :total="count"
+      >
+      </el-pagination>
     </div>
   </div>
 </template>
@@ -180,6 +190,13 @@ export default {
           label: "民族特色婚礼",
         },
       ],
+      currentRow: null,
+      offset: 0,
+      limit: 20,
+      count: 0,
+      currentPage: 1,
+      restaurant_id: null,
+      expendRow: [],
     };
   },
   created() {
@@ -193,10 +210,14 @@ export default {
     async initData() {
       try {
         await this.$axios.get(`/getHlInfoList`).then((res) => {
-          console.log("婚礼信息", res);
           if (res.data.code === "0") {
+            this.count = res.data.count;
             this.tableData = res.data.data;
-            console.log("tableData:", this.tableData);
+            // this.tableData.map((item , index) => {
+            //   console.log(item);
+            //   let dzArr = item.dzlist.split(",");
+            //   console.log(dzArr);
+            // })
           } else {
             throw new Error("获取数据失败");
           }
@@ -208,8 +229,8 @@ export default {
 
     // 编辑弹窗
     handleEdit(index, row) {
-      console.log(row);
       this.selectTable = row;
+      console.log(this.selectTable);
       this.dialogFormVisible = true;
     },
 
@@ -244,26 +265,15 @@ export default {
       }
     },
 
-    handleServiceAvatarScucess(res, file) {
+    // 上传图片成功
+    handleServiceAvatarScucess(res) {
+      console.log(res);
       if (res.code === "0") {
-        this.formData.image_path = res.path;
+        this.formData.imgpath = res.path;
+        this.selectTable.imgpath = res.path;
       } else {
         this.$message.error("上传图片失败！");
       }
-    },
-
-    beforeAvatarUpload(file) {
-      const isRightType =
-        file.type === "image/jpeg" || file.type === "image/png";
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isRightType) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
-      }
-      if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
-      }
-      return isRightType && isLt2M;
     },
 
     // 确认修改
@@ -274,7 +284,7 @@ export default {
 
         await this.$axios
           .post(
-            `/upHlinfo?id=${this.selectTable.id}&imgpath=${this.selectTable.imgpath}&infotext=${this.selectTable.infotext}&price=${this.selectTable.price}&titletext=${this.selectTable.titletext}&hlclass=${this.selectTable.hlclass}`
+            `/upHlinfo?id=${this.selectTable.id}&imgpath=${this.selectTable.imgpath}&infotext=${this.selectTable.infotext}&xqtext=${this.selectTable.xqtext}&price=${this.selectTable.price}&titletext=${this.selectTable.titletext}&hlclass=${this.selectTable.hlclass}`
           )
           .then((res) => {
             if (res.data.code === "0") {
@@ -292,6 +302,15 @@ export default {
       } catch (err) {
         console.log("婚礼信息更新失败", err);
       }
+    },
+
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.offset = (val - 1) * this.limit;
+      this.getOrders();
     },
   },
 };

@@ -2,39 +2,35 @@
   <div class="fillcontain">
     <head-top></head-top>
     <div class="table_container">
-      <el-table
-        :data="tableData"
-        @expand="expand"
-        :expand-row-keys="expendRow"
-        :row-key="(row) => row.index"
-        style="width: 100%"
-      >
+      <el-table :data="tableData" style="width: 100%">
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item label="评论内容">
+                <span>{{ props.row.textinfo }}</span>
+              </el-form-item>
+              <el-form-item label="发布时间">
+                <span>{{ props.row.fbtime }}</span>
+              </el-form-item>
               <el-form-item label="用户名">
                 <span>{{ props.row.username }}</span>
               </el-form-item>
+              <el-form-item label="用户昵称">
+                <span>{{ props.row.nickname }}</span>
+              </el-form-item>
               <el-form-item label="婚礼标题">
-                <span>{{ props.row.restaurant_name }}</span>
+                <span>{{ props.row.titletext }}</span>
               </el-form-item>
-              <el-form-item label="评论内容">
-                <span>{{ props.row.address }}</span>
-              </el-form-item>
-              <el-form-item label="发布时间">
-                <span>{{ props.row.restaurant_id }}</span>
-              </el-form-item>
-              <el-form-item label="店铺地址">
-                <span>{{ props.row.restaurant_address }}</span>
+              <el-form-item label="婚礼类型">
+                <span>{{ props.row.hlclass }}</span>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="婚礼标题" prop="hl_title"> </el-table-column>
+        <el-table-column label="婚礼标题" prop="titletext"> </el-table-column>
         <el-table-column label="评论内容" prop="textinfo"> </el-table-column>
         <el-table-column label="发布时间" prop="fbtime"> </el-table-column>
-        <el-table-column label="发布者" prop="userid"> </el-table-column>
-
+        <el-table-column label="发布者" prop="username"> </el-table-column>
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
             <el-button
@@ -47,6 +43,17 @@
           </template>
         </el-table-column>
       </el-table>
+      <div class="Pagination" style="text-align: left; margin-top: 10px">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-size="20"
+          layout="total, prev, pager, next"
+          :total="count"
+        >
+        </el-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -59,10 +66,13 @@ export default {
     return {
       tableData: [],
       hlData: [],
+      expendRow: [],
       currentRow: null,
+      offset: 0,
+      limit: 20,
+      count: 0,
       currentPage: 1,
       restaurant_id: null,
-      expendRow: [],
     };
   },
   components: {
@@ -78,7 +88,38 @@ export default {
       try {
         await this.$axios.get(`/getPlInfoList`).then((res) => {
           if (res.data.code === "0") {
+            this.count = res.data.count;
             this.tableData = res.data.data;
+            this.tableData.map((pl) => {
+              // 请求用户信息
+              this.$axios
+                .get(`/getUserinfoById?id=${pl.userid}`)
+                .then((userRes) => {
+                  if (userRes.data.code === "0") {
+                    for (var i = 0; i < this.tableData.length; i++) {
+                      if (this.tableData[i].id === pl.id) {
+                        this.tableData[i].username = userRes.data.data.username;
+                        this.tableData[i].nickname = userRes.data.data.nickname;
+                      }
+                    }
+                  } else {
+                    console.log(userRes.data.msg);
+                  }
+                });
+              // 获取婚礼信息
+              this.$axios.get(`/getHlinfoById?id=${pl.hlid}`).then((hlRes) => {
+                if (hlRes.data.code === "0") {
+                  for (var i = 0; i < this.tableData.length; i++) {
+                    if (this.tableData[i].id === pl.id) {
+                      this.tableData[i].titletext = hlRes.data.data.titletext;
+                      this.tableData[i].hlclass = hlRes.data.data.hlclass;
+                    }
+                  }
+                } else {
+                  console.log(hlRes.data.msg);
+                }
+              });
+            });
           } else {
             throw new Error("获取数据失败");
           }
@@ -133,6 +174,15 @@ export default {
         });
         console.log("删除评论失败");
       }
+    },
+
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.offset = (val - 1) * this.limit;
+      this.getUsers();
     },
   },
 };
