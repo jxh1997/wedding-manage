@@ -3,9 +3,9 @@
     <transition name="form-fade" mode="in-out">
       <section class="form_contianer" v-show="showLogin">
         <div class="manage_tip">
-          <p>elm后台管理系统</p>
+          <p>婚礼策划后台管理系统</p>
         </div>
-        <el-form :model="loginForm" :rules="rules" ref="loginForm">
+        <el-form class="login-form" :model="loginForm" :rules="rules" ref="loginForm">
           <el-form-item prop="username">
             <el-input v-model="loginForm.username" placeholder="用户名"
               ><span>dsfsf</span></el-input
@@ -27,9 +27,6 @@
             >
           </el-form-item>
         </el-form>
-        <p class="tip">温馨提示：</p>
-        <p class="tip">未登录过的新用户，自动注册</p>
-        <p class="tip">注册过的用户可凭账号密码登录</p>
       </section>
     </transition>
   </div>
@@ -71,21 +68,26 @@ export default {
     async submitForm(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          //  login({
-          //     user_name: this.loginForm.username,
-          //     password: this.loginForm.password,
-          //   });
           await this.$axios
             .post(
               `/userlogin?username=${this.loginForm.username}&password=${this.loginForm.password}`
             )
             .then((res) => {
               if (res.data.code === "0") {
-                this.$message({
-                  type: "success",
-                  message: "登录成功",
-                });
-                this.$router.push("manage");
+                if(res.data.data.groupid === 1) {
+                  this.$message({
+                    type: "success",
+                    message: "登录成功",
+                  });
+                  this.$router.push("manage");
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: '后台管理系统需使用管理员身份登录。',
+                  });
+                }
+                
+                
               } else {
                 this.$message({
                   type: "error",
@@ -104,35 +106,27 @@ export default {
       });
     },
   },
-
-  watch: {
-    adminInfo: function (newValue) {
-      if (newValue.id) {
-        this.$message({
-          type: "success",
-          message: "检测到您之前登录过，将自动登录",
-        });
-        this.$router.push("manage");
-      }
-    },
-  },
 };
 </script>
 
 <style lang="less" scoped>
 @import "../style/mixin";
+.login-form {
+  margin-top: 30px;
+}
 .login_page {
   background-color: #324057;
+  height: 100vh;
 }
 .manage_tip {
   position: absolute;
   width: 100%;
   top: -100px;
   left: 0;
-  p {
-    font-size: 34px;
-    color: #fff;
-  }
+}
+.manage_tip p {
+  font-size: 34px;
+  color: #fff;
 }
 .form_contianer {
   .wh(320px, 210px);
@@ -141,15 +135,12 @@ export default {
   border-radius: 5px;
   text-align: center;
   background-color: #fff;
-  .submit_btn {
-    width: 100%;
-    font-size: 16px;
-  }
 }
-.tip {
-  font-size: 12px;
-  color: red;
+.submit_btn {
+  width: 100%;
+  font-size: 16px;
 }
+
 .form-fade-enter-active,
 .form-fade-leave-active {
   transition: all 1s;

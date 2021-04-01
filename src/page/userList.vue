@@ -3,12 +3,24 @@
     <head-top></head-top>
     <div class="table_container">
       <el-table :data="tableData" highlight-current-row style="width: 100%">
-        <el-table-column type="index" width="100"> </el-table-column>
-        <el-table-column property="lastlogin_time" label="最后登录时间" width="220">
+        <el-table-column type="index" width="100" label="序号"> </el-table-column>
+        <el-table-column property="lastlogin" label="最后登录时间">
         </el-table-column>
-        <el-table-column property="username" label="用户名" width="220">
+        <el-table-column property="username" label="用户名">
         </el-table-column>
         <el-table-column property="nickname" label="昵称"> </el-table-column>
+        <el-table-column property="groupid" label="用户组"> </el-table-column>
+        <el-table-column label="操作" width="200">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <div class="Pagination" style="text-align: left; margin-top: 10px">
         <el-pagination
@@ -31,14 +43,7 @@ import headTop from "../components/headTop";
 export default {
   data() {
     return {
-      tableData: [
-        {
-          lastlogin_time: "2020-05-02",  // 最后登录时间
-          username: "王小虎",  // 用户名
-          nickname: '',  // 昵称
-          imgpath: ''
-        },
-      ],
+      tableData: [],
       currentRow: null,
       offset: 0,
       limit: 20,
@@ -63,13 +68,7 @@ export default {
             this.tableData = [];
             this.$data.count = userList.length;
             if (res.data.code === "0") {
-              userList.forEach((item) => {
-                const tableData = {};
-                tableData.username = item.username;
-                tableData.lastlogin_time = item.lastlogin;
-                tableData.nickname = item.nickname;
-                this.tableData.push(tableData);
-              });
+              this.tableData = res.data.data;
             } else{
                 throw new Error('获取数据失败');
             }
@@ -86,7 +85,30 @@ export default {
       this.offset = (val - 1) * this.limit;
       this.getUsers();
     },
+    // 删除用户
+    async handleDelete(row) {
+      try {
+        await this.$axios.get(`/delUserinfo?id=${row.id}`).then((res) => {
+          if (res.data.code === "0") {
+            this.$message({
+              type: "success",
+              message: "用户删除成功",
+            });
+            this.initData();
+          } else {
+            throw new Error(res.data.msg);
+          }
+        });
+      } catch (err) {
+        this.$message({
+          type: "error",
+          message: err.message,
+        });
+        console.log("用户删除失败");
+      }
+    },
   },
+  
 };
 </script>
 

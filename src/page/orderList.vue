@@ -140,7 +140,7 @@ export default {
     this.restaurant_id = this.$route.query.restaurant_id;
     this.initData();
   },
-  mounted() {},
+
   methods: {
     async initData() {
       try {
@@ -256,7 +256,7 @@ export default {
               type: "success",
               message: "删除订单成功",
             });
-            this.tableData.splice(index, 1);
+            this.initData();
           } else {
             throw new Error(res.data.msg);
           }
