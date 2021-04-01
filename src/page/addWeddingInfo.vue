@@ -36,16 +36,12 @@
 
           <el-form-item label="婚礼价格" style="white-space: nowrap">
             <el-input v-model="formData.price" style="width: 100px"></el-input>
-            <!-- ~ -->
-            <!-- <el-input v-model="formData.price2" style="width: 100px"></el-input> -->
           </el-form-item>
 
           <el-form-item label="上传婚礼图片">
             <el-upload
               class="upload-demo"
               :action="baseUrl"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
               :file-list="fileList"
               :on-success="handleShopAvatarScucess"
             >
@@ -86,11 +82,11 @@ export default {
         imgpath: "",
         activityValue: "西式婚礼",
       },
+      fileList: [],
       rules: {
         title: [{ required: true, message: "请输入婚礼名称", trigger: "blur" }],
         desc: [{ required: true, message: "请输入婚礼简介", trigger: "blur" }],
-        price1: [{ required: true, message: "请输入婚礼价格" }],
-        price2: [{ required: true, message: "请输入婚礼价格" }],
+        price: [{ required: true, message: "请输入婚礼价格" }],
       },
       options: [
         {
@@ -142,7 +138,6 @@ export default {
   methods: {
     // 上传图片
     handleShopAvatarScucess(res, file) {
-      console.log("handleShopAvatarScucess: ", res);
       if (res.code === "0") {
         this.formData.imgpath = res.path;
       } else {

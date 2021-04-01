@@ -34,8 +34,8 @@
           </template>
         </el-table-column>
         <el-table-column label="订单 ID" prop="id"> </el-table-column>
-        <el-table-column label="婚礼" prop="hlid"> </el-table-column>
-        <el-table-column label="价格" prop="price"> </el-table-column>
+        <el-table-column label="婚礼标题" prop="titletext"> </el-table-column>
+        <el-table-column label="婚礼价格" prop="price"> </el-table-column>
         <el-table-column label="订单状态" prop="State"></el-table-column>
         <el-table-column label="预约日期" prop="yydate"> </el-table-column>
         <el-table-column label="操作" width="300">

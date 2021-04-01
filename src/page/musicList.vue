@@ -16,7 +16,7 @@
               marginwidth="0"
               marginheight="0"
               width="330"
-              height="100"
+              height="86"
               :src="scope.row.filepath"
             ></iframe>
           </template>
@@ -44,7 +44,7 @@
         <el-form :model="selectTable">
           <el-form-item label="音乐路径" label-width="100px">
             <el-input
-              placeholder="https://music.163.com/outchain/player?type=2&id=27899008&auto=0&height=66"
+              placeholder='https://music.163.com/outchain/player?type=2&id=27899008&auto=0&height=66'
               v-model="selectTable.filepath"
             ></el-input>
           </el-form-item>
@@ -120,9 +120,10 @@ export default {
 
     // 上传音乐
     async handleAdd() {
+      let filepath = encodeURIComponent(this.selectTable.filepath);
       try {
         await this.$axios
-          .get(`/insMusicinfo?filepath=${this.selectTable.filepath}`)
+          .get(`/insMusicinfo?filepath=${filepath}`)
           .then((res) => {
             if (res.data.code === "0") {
               this.$message({

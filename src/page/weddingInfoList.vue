@@ -112,7 +112,7 @@
               :show-file-list="false"
               :on-success="handleServiceAvatarScucess"
             >
-              <img
+              <img 
                 v-if="selectTable.imgpath"
                 :src="$store.state.baseUrl2 + selectTable.imgpath"
                 class="avatar"
@@ -213,11 +213,6 @@ export default {
           if (res.data.code === "0") {
             this.count = res.data.count;
             this.tableData = res.data.data;
-            // this.tableData.map((item , index) => {
-            //   console.log(item);
-            //   let dzArr = item.dzlist.split(",");
-            //   console.log(dzArr);
-            // })
           } else {
             throw new Error("获取数据失败");
           }
@@ -250,7 +245,7 @@ export default {
               type: "success",
               message: "删除婚礼成功",
             });
-            this.tableData.splice(index, 1);
+            this.initData();
           } else {
             throw new Error(res.data.msg);
           }
@@ -266,9 +261,7 @@ export default {
 
     // 上传图片成功
     handleServiceAvatarScucess(res) {
-      console.log(res);
       if (res.code === "0") {
-        this.formData.imgpath = res.path;
         this.selectTable.imgpath = res.path;
       } else {
         this.$message.error("上传图片失败！");
@@ -310,6 +303,16 @@ export default {
       this.currentPage = val;
       this.offset = (val - 1) * this.limit;
       this.getOrders();
+    },
+  },
+
+  watch: {
+    $route: {
+      handler(route) {
+        if (route.path == "/weddingInfoList") {
+          this.initData();
+        }
+      },
     },
   },
 };

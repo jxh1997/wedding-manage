@@ -6,8 +6,14 @@
       <el-button type="success" @click="dialogFormVisible = true">
         添加图片
       </el-button>
+      <el-tooltip placement="top">
+        <div slot="content">若排序数字相同，则按顺序显示。</div>
+        <el-button>排序声明</el-button>
+      </el-tooltip>
+            
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column label="轮播图排序" prop="pxnum" width="150"> </el-table-column>
+        <el-table-column label="轮播图排序" prop="pxnum" width="150">
+        </el-table-column>
         <el-table-column
           label="轮播图类型"
           prop="bclass"
@@ -45,7 +51,7 @@
         v-model="dialogFormVisible"
         :visible.sync="dialogFormVisible"
       >
-        <el-form :model="selectTable">
+        <el-form :model="tableData">
           <el-form-item label="轮播图类型" label-width="100px">
             <el-select
               v-model="bannerInfo.bclass"
@@ -98,7 +104,10 @@
             <el-input v-model="selectTable2.pxnum"></el-input>
           </el-form-item>
           <el-form-item label="轮播图预览" label-width="100px">
-            <img :src="$store.state.baseUrl2 + selectTable2.imgpath" alt="" />
+            <img
+              :src="$store.state.baseUrl2 + selectTable2.imgpath"
+              class="yulanImg"
+            />
           </el-form-item>
         </el-form>
 
@@ -165,6 +174,15 @@ export default {
   },
 
   methods: {
+    // 分页
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.offset = (val - 1) * this.limit;
+      this.getOrders();
+    },
     // 初始化数据
     async initData() {
       try {
@@ -282,16 +300,6 @@ export default {
       console.log(file);
     },
   },
-
-  // 分页
-  handleSizeChange(val) {
-    console.log(`每页 ${val} 条`);
-  },
-  handleCurrentChange(val) {
-    this.currentPage = val;
-    this.offset = (val - 1) * this.limit;
-    this.getOrders();
-  },
 };
 </script>
 
@@ -299,5 +307,9 @@ export default {
 .bannerImg {
   width: 300px;
   height: 200px;
+}
+.yulanImg {
+  height: 200px;
+  width: 300px;
 }
 </style>

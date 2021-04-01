@@ -162,7 +162,7 @@ export default {
               type: "success",
               message: "删除评论成功",
             });
-            this.tableData.splice(index, 1);
+            this.initData();
           } else {
             throw new Error(res.data.msg);
           }
