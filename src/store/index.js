@@ -8,6 +8,7 @@ const state = {
 	adminInfo: {
 		avatar: require('@/assets/img/avatar.png')
 	},
+	baseUrl: "http://152.136.229.70:8011/test",  // 图片地址
 }
 
 const mutations = {

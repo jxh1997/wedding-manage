@@ -77,7 +77,7 @@
             <el-input v-model="selectTable.infotext"></el-input>
           </el-form-item>
           <el-form-item label="婚礼详情" label-width="100px">
-            <el-input type="textarea" v-model="selectTable.infotext"></el-input>
+            <el-input type="textarea" v-model="selectTable.xqtext"></el-input>
           </el-form-item>
           <el-form-item label="婚礼类型" label-width="100px">
             <el-select
@@ -230,7 +230,6 @@ export default {
     // 编辑弹窗
     handleEdit(index, row) {
       this.selectTable = row;
-      console.log(this.selectTable);
       this.dialogFormVisible = true;
     },
 

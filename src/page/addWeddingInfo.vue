@@ -42,9 +42,11 @@
 
           <el-form-item label="上传婚礼图片">
             <el-upload
-              class="avatar-uploader"
+              class="upload-demo"
               :action="baseUrl"
-              :show-file-list="false"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :file-list="fileList"
               :on-success="handleShopAvatarScucess"
             >
               <img
@@ -73,6 +75,8 @@ import headTop from "@/components/headTop";
 export default {
   data() {
     return {
+
+      baseUrl: "/test/uploadfile",
       formData: {
         titletext: "", //婚礼名称
         hlclass: "", // 婚礼类型
@@ -127,7 +131,6 @@ export default {
         },
       ],
 
-      baseUrl: "/test/uploadfile",
       categoryOptions: [],
     };
   },
