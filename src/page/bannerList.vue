@@ -76,6 +76,7 @@
               :on-preview="handlePreview"
               :on-remove="handleRemove"
               :on-success="handleBannerSuccess"
+              :on-error="handleBannerError"
               :file-list="fileList"
               list-type="picture"
             >
@@ -164,7 +165,7 @@ export default {
           },
         ],
         bclass: "首页轮播图",
-        pxnum: "",
+        pxnum: 1,
         imgpath: "",
       },
     };
@@ -217,6 +218,8 @@ export default {
                 message: "轮播图上传成功",
               });
               this.dialogFormVisible = false;
+              this.bannerInfo.pxnum ++;
+              this.fileList = [];
               this.initData();
             } else {
               throw new Error(res.data.msg);
@@ -268,6 +271,14 @@ export default {
     // 图片上传成功
     handleBannerSuccess(res) {
       this.bannerInfo.imgpath = res.path;
+
+    },
+    // 图片上传失败
+    handleBannerError() {
+      this.$message({
+        message: '图片上传失败',
+        type: 'warning'
+      })
     },
 
     // 删除轮播图

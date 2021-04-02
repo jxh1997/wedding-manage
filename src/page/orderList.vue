@@ -300,20 +300,30 @@ export default {
 
     // 审核通过
     async handleTongguo(index, row) {
-      await this.$axios.post(`/upDdinfo?id=${row.id}&tag=${3}`).then((res) => {
-        if (res.data.code === "0") {
-          this.$message({
-            type: "success",
-            message: "订单审核通过，提醒用户及时支付",
+      console.log(row);
+      if (row.tag === "2") {
+        await this.$axios
+          .post(`/upDdinfo?id=${row.id}&tag=${3}`)
+          .then((res) => {
+            if (res.data.code === "0") {
+              this.$message({
+                type: "success",
+                message: "订单审核通过，提醒用户及时支付",
+              });
+              this.initData();
+            } else {
+              this.$message({
+                type: "error",
+                message: res.data.msg,
+              });
+            }
           });
-          this.initData();
-        } else {
-          this.$message({
-            type: "error",
-            message: res.data.msg,
-          });
-        }
-      });
+      } else {
+        this.$message({
+          type: "error",
+          message: '当前订单状态无需审核',
+        });
+      }
     },
   },
 };

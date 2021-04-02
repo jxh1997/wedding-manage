@@ -61,7 +61,7 @@ export default {
     async initData() {
       try {
         await this.$axios
-          .post(`/getUserList`)
+          .post(`/getUserList?groupid=2`)
           .then((res) => {
             console.log(res);
             let userList = res.data.data;

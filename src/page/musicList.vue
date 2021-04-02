@@ -3,9 +3,18 @@
     <head-top></head-top>
 
     <div class="table_container">
-      <el-button type="success" @click="dialogFormVisible = true">
-        添加背景音乐
-      </el-button>
+      
+      <el-tooltip placement="top">
+        <div slot="content">
+          背景音乐添加方式：<br/>
+          1. 在网易云音乐中打开要添加的音乐<br/>
+          2. 选择“分享”，“复制链接”，用浏览器打开<br/>
+          3. 点击“生成外链播放器”，选择使用插件，复制HTML代码中的src链接添加即可<br/>
+        </div>
+        <el-button type="success" @click="dialogFormVisible = true">
+          添加背景音乐
+        </el-button>
+      </el-tooltip>
       <el-table :data="tableData" style="width: 100%">
         <el-table-column label="ID" prop="id" width="100"> </el-table-column>
         <el-table-column label="音乐预览" width="400">
