@@ -301,7 +301,7 @@ export default {
     // 审核通过
     async handleTongguo(index, row) {
       console.log(row);
-      if (row.tag === "2") {
+      if (row.tag === "1") {
         await this.$axios
           .post(`/upDdinfo?id=${row.id}&tag=${3}`)
           .then((res) => {
